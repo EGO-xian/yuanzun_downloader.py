@@ -60,10 +60,10 @@ python yuanzunxs_downloader.py
 你可以修改脚本顶部的以下参数（位于 BOOK_URL 下方）：
 ```bash
 
-变量	                说明	              默认值
-DELAY	            章节间请求延时（秒）	      1
-TIMEOUT	          请求超时时间（秒）	        10
-PARAGRAPH_INDENT	段落缩进字符串	      '　　'（两个全角空格）
+变量	                      说明	                  默认值
+DELAY	                章节间请求延时（秒）	            1
+TIMEOUT	                请求超时时间（秒）	            10
+PARAGRAPH_INDENT	    段落缩进字符串	          '　　'（两个全角空格）
 
 ```
 常见问题
