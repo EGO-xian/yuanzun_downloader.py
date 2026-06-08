@@ -136,7 +136,6 @@ pip install requests beautifulsoup4
 # smart_format_novel.py ：
 
 ## 使用说明
-将脚本保存为 smart_format_novel.py。
 
 运行（覆盖原文件，自动备份）：
 
