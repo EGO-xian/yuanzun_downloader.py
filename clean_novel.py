@@ -5,28 +5,43 @@ import os
 import re
 import zhconv
 
+def remove_ad_flexible(content, ad_text):
+    """
+    从 content 中删除广告文本，忽略广告文本内部的任何空白字符（包括换行）。
+    广告文本中的每个字符之间允许出现 \s*。
+    """
+    # 将广告文本转换为正则模式：每个字符间允许任意空白
+    pattern = r'\s*'.join(re.escape(ch) for ch in ad_text)
+    # 使用多行模式，让 '.' 也能匹配换行符（实际上 \s 已包含换行，但为了稳妥）
+    regex = re.compile(pattern, re.DOTALL)
+    # 替换为空
+    return regex.sub('', content)
+
 def clean_novel_file(input_path, output_path=None, backup=True):
     """
     清理小说 TXT 文件：
-    1. 删除指定的两段广告文本
+    1. 删除指定的广告段落（支持跨行匹配）
     2. 删除全等号分隔行（如 ==========）
     3. 全文繁体转简体（使用 zhconv）
     """
-    # 需要删除的广告文本（精确匹配整段）
+    # 需要删除的广告文本（原始形式，不关心其中的换行）
     ads_to_remove = [
-        "关於登录用户跨设备保存书架的问题, 已经修正了, 如果还是无法保存, 请先记住书架的内容, 清除浏览器的Cookie, 再重新登陆并加入书架!",
-        "本站采用Cookie技术来保存您的「阅读记录」和「书架」, 所以清除浏览器Cookie数据丶重装浏览器 之类的操作会让您的阅读进度消失哦, 建议可以偶尔截图保存书架, 以防找不到正在阅读的小说!"
+        "关于登录用户跨设备保存书架的问题,已经修正了, 如果还是无法保存, 请先记住书架的内容, 清除浏览器的Cookie, 再重新登陆并加入书架!",
+        "本站采用Cookie技术来保存您的“阅读记录”和“书架”, 所以清除浏览器Cookie数据、重装浏览器 之类的操作会让您的阅读进度消失哦,建议可以偶尔截图保存书架, 以防找不到正在阅读的小说!",
+        "搜书名找不到, 可以试试搜作者哦, 也许只是改名了!"
     ]
 
     # 读取原文件
     with open(input_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # 1. 删除广告
+    # 1. 删除广告（跨行灵活匹配）
     for ad in ads_to_remove:
+        content = remove_ad_flexible(content, ad)
+        # 可选：再尝试一次精确匹配（以防正则未匹配到）
         content = content.replace(ad, '')
 
-    # 2. 删除全等号分隔行
+    # 2. 删除全等号分隔行（单独成行的等号串）
     lines = content.split('\n')
     cleaned_lines = []
     for line in lines:
