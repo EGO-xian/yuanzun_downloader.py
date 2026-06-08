@@ -3,39 +3,42 @@
 
 import os
 import re
-
+import zhconv
 
 def clean_novel_file(input_path, output_path=None, backup=True):
     """
     清理小说 TXT 文件：
-    1. 删除指定的广告段落
-    2. 将全文中的“於”替换为“于”
-
-    Args:
-        input_path: 输入文件路径
-        output_path: 输出文件路径（若为 None，则覆盖原文件）
-        backup: 是否备份原文件（仅在覆盖时有效）
+    1. 删除指定的两段广告文本
+    2. 删除全等号分隔行（如 ==========）
+    3. 全文繁体转简体（使用 zhconv）
     """
     # 需要删除的广告文本（精确匹配整段）
     ads_to_remove = [
         "关於登录用户跨设备保存书架的问题, 已经修正了, 如果还是无法保存, 请先记住书架的内容, 清除浏览器的Cookie, 再重新登陆并加入书架!",
-        "本站采用Cookie技术来保存您的「阅读记录」和「书架」, 所以清除浏览器Cookie数据丶重装浏览器 之类的操作会让您的阅读进度消失哦, 建议可以偶尔截图保存书架, 以防找不到正在阅读的小说!",
-        "=================================================="
+        "本站采用Cookie技术来保存您的「阅读记录」和「书架」, 所以清除浏览器Cookie数据丶重装浏览器 之类的操作会让您的阅读进度消失哦, 建议可以偶尔截图保存书架, 以防找不到正在阅读的小说!"
     ]
 
     # 读取原文件
     with open(input_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # 删除广告（直接替换为空字符串）
+    # 1. 删除广告
     for ad in ads_to_remove:
         content = content.replace(ad, '')
 
-    # 将繁体“於”替换为简体“于”
-    content = content.replace('於', '于')
+    # 2. 删除全等号分隔行
+    lines = content.split('\n')
+    cleaned_lines = []
+    for line in lines:
+        if re.fullmatch(r'=+', line.strip()):
+            continue
+        cleaned_lines.append(line)
+    content = '\n'.join(cleaned_lines)
 
-    # 可选：删除广告后可能留下多余的空行，可以进一步清理
-    # 例如将连续多个换行替换为最多两个换行（保持章节分隔）
+    # 3. 繁体转简体
+    content = zhconv.convert(content, 'zh-cn')
+
+    # 清理多余空行（保留最多两个换行，维持章节分隔）
     content = re.sub(r'\n{3,}', '\n\n', content)
 
     # 确定输出路径
@@ -51,7 +54,6 @@ def clean_novel_file(input_path, output_path=None, backup=True):
         f.write(content)
 
     print(f"清理完成！文件保存为: {output_path}")
-
 
 if __name__ == '__main__':
     import sys
