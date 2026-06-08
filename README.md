@@ -121,7 +121,7 @@ python clean_novel.py 小说.txt 小说_clean.txt
 - Python 3.6 及以上版本
 - 依赖库：`zhconv`
 
-#1. 安装依赖
+# 1. 安装依赖
 
 打开命令行（终端），执行：
 
@@ -129,5 +129,5 @@ python clean_novel.py 小说.txt 小说_clean.txt
 pip install requests beautifulsoup4
 ```
 
-##自定义
+## 自定义
 如需添加/修改广告文本，编辑脚本中的 ads_to_remove 列表即可。
