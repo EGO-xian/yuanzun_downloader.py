@@ -35,7 +35,6 @@ pip install requests beautifulsoup4
 
 示例：
 
-python
 # 原示例（《穿越炮灰反派？我化身病娇萝莉》）
 ```bash
 BOOK_URL = 'https://www.yuanzunxs88.com/go/1521/'
